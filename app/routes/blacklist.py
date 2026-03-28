@@ -36,7 +36,6 @@ class BlacklistResource(Resource):
         if Blacklist.query.filter_by(email=data["email"]).first():
             return {"mensaje": "El correo electrónico ya se encuentra en la lista negra"}, 409
 
-        # Obtener IP del cliente considerando proxies
         ip_address = request.headers.get("X-Forwarded-For", request.remote_addr)
         if ip_address and "," in ip_address:
             ip_address = ip_address.split(",")[0].strip()

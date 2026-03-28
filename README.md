@@ -200,7 +200,7 @@ Ir a **Elastic Beanstalk → Create application** y completar el wizard:
 - Environment tier: **Web server environment**
 - Application name: `email-blacklist`
 - Platform: **Python**
-- Platform branch: **Python 3.11** (o la más reciente disponible)
+- Platform branch: **Python 3.9** (o la más reciente disponible)
 - Application code: **Upload your code** → subir el `app.zip` generado en el paso anterior
 
 **Step 4 - Configure networking** *(dentro del mismo wizard, antes de crear)*:

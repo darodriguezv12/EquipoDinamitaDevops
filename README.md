@@ -8,7 +8,7 @@ Microservicio Flask para gestionar la lista negra global de correos electrónico
 
 - Python 3.9+
 - Docker (PostgreSQL corre en contenedor para ejecución local)
-- AWS CLI + EB CLI para despliegue en AWS (`pip install awsebcli`)
+- Acceso a la consola de AWS para el despliegue
 
 ---
 

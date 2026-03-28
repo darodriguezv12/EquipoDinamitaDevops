@@ -223,15 +223,14 @@ Al crearse el environment, AWS le asigna automáticamente un security group (emp
 
 En la consola de EB, ir a **Configuration → Software → Environment properties** y agregar:
 
-| Clave          | Valor                                                                              |
-|----------------|------------------------------------------------------------------------------------|
-| `DATABASE_URL` | `postgresql://postgres:password@<RDS_ENDPOINT>:5432/email-blacklist-db`           |
-| `STATIC_TOKEN` | `blacklist-secret-token-2026`                                                      |
-| `FLASK_APP`    | `run.py`                                                                           |
-| `FLASK_ENV`    | `development`                                                                      |
-| `FLASK_DEBUG`  | `True`                                                                             |
+| Clave          | Valor                                                                    |
+|----------------|--------------------------------------------------------------------------|
+| `DATABASE_URL` | `postgresql://postgres:password@<RDS_ENDPOINT>:5432/email-blacklist-db` |
+| `STATIC_TOKEN` | `blacklist-secret-token-2026`                                            |
 
-Guardar - EB reiniciará la aplicación automáticamente.
+> `FLASK_APP`, `FLASK_ENV` y `FLASK_DEBUG` ya están configuradas en `.ebextensions/env.config` y no hace falta agregarlas aquí.
+
+Guardar — EB reiniciará la aplicación automáticamente.
 
 ---
 

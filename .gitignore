@@ -1,0 +1,64 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Tests and coverage
+.pytest_cache/
+.mypy_cache/
+.pytype/
+.pyright/
+.coverage
+.coverage.*
+htmlcov/
+coverage.xml
+
+# Logs
+logs/
+*.log
+
+# IDE/editor
+.vscode/
+.idea/
+*.code-workspace
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Environment/config
+.env
+.env.*
+.envrc
+.python-version
+
+# Flask
+instance/
+*.sqlite3
+
+# Docker/local tooling
+.docker/
+docker-data/
+
+# Cursor/editor state
+.cursor/
+
+# Node (if any present)
+node_modules/
+
+# Misc
+*.swp
+*.swo
+*.zip

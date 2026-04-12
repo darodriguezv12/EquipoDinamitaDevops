@@ -1,0 +1,22 @@
+services:
+  web:
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/blacklistdb
+      API_TOKEN: mi-token-secreto
+      DB_INIT_RETRIES: 5
+      DB_INIT_DELAY: 2
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: blacklistdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d blacklistdb"]
+      interval: 5s
+      timeout: 5s
+      retries: 5

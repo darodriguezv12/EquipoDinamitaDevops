@@ -1,0 +1,285 @@
+{
+  "info": {
+    "_postman_id": "a4fb1962-6de3-4779-8df3-a3ca1f54f1c7",
+    "name": "Blacklist API",
+    "description": "Coleccion de Postman para validar y documentar la API REST del servicio de blacklist. Incluye escenarios felices y de error para los endpoints disponibles en la aplicacion.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Ping",
+      "description": "Verifica que la API este disponible y respondiendo. No requiere autenticacion.",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Endpoint de salud basico. Debe responder 200 con el mensaje pong.",
+        "url": {
+          "raw": "{{baseUrl}}/ping",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "ping"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create blacklist entry",
+      "description": "Crea un registro de correo en la lista negra. Requiere token Bearer y un cuerpo JSON con email, app_uuid y blocked_reason opcional.",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{apiToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"app_uuid\": \"{{appUuid}}\",\n  \"blocked_reason\": \"{{blockedReason}}\"\n}"
+        },
+        "description": "Escenario principal de creacion. Debe devolver 201 si el correo no existe o 409 si ya fue registrado anteriormente. El cuerpo incluye blocked_reason para documentar el motivo del bloqueo.",
+        "url": {
+          "raw": "{{baseUrl}}/blacklists",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "blacklists"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status is 201 or 409', function () {",
+              "    pm.expect(pm.response.code).to.be.oneOf([201, 409]);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create blacklist entry without token",
+      "description": "Valida que la API rechace la creacion de registros cuando no se envia el token Bearer.",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"{{testEmail}}\",\n  \"app_uuid\": \"{{appUuid}}\",\n  \"blocked_reason\": \"{{blockedReason}}\"\n}"
+        },
+        "description": "Escenario negativo de autenticacion. Debe devolver 401 Unauthorized.",
+        "url": {
+          "raw": "{{baseUrl}}/blacklists",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "blacklists"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status is 401', function () {",
+              "    pm.response.to.have.status(401);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create blacklist entry invalid uuid",
+      "description": "Valida que la API rechace un app_uuid invalido en la creacion de un registro.",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{apiToken}}"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"email\": \"invalid-uuid@example.com\",\n  \"app_uuid\": \"not-a-uuid\",\n  \"blocked_reason\": \"{{blockedReason}}\"\n}"
+        },
+        "description": "Escenario negativo de validacion. Debe devolver 400 cuando el app_uuid no cumple el formato UUID.",
+        "url": {
+          "raw": "{{baseUrl}}/blacklists",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "blacklists"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status is 400', function () {",
+              "    pm.response.to.have.status(400);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get existing blacklist entry",
+      "description": "Consulta un correo previamente registrado en blacklist. Requiere token Bearer y debe retornar si el correo esta bloqueado junto con blocked_reason.",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{apiToken}}"
+          }
+        ],
+        "description": "Escenario de consulta exitosa. La respuesta debe indicar is_blacklisted=true y retornar blocked_reason.",
+        "url": {
+          "raw": "{{baseUrl}}/blacklists/{{testEmail}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "blacklists",
+            "{{testEmail}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('email is blacklisted', function () {",
+              "    var body = pm.response.json();",
+              "    pm.expect(body.is_blacklisted).to.eql(true);",
+              "    pm.expect(body.blocked_reason).to.eql(pm.environment.get('blockedReason'));",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get missing blacklist entry",
+      "description": "Consulta un correo que no existe en blacklist. Requiere token Bearer y debe retornar blocked_reason en null.",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{apiToken}}"
+          }
+        ],
+        "description": "Escenario de consulta negativa. La respuesta debe indicar is_blacklisted=false y blocked_reason=null.",
+        "url": {
+          "raw": "{{baseUrl}}/blacklists/{{missingEmail}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "blacklists",
+            "{{missingEmail}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status is 200', function () {",
+              "    pm.response.to.have.status(200);",
+              "});",
+              "pm.test('email is not blacklisted', function () {",
+              "    var body = pm.response.json();",
+              "    pm.expect(body.is_blacklisted).to.eql(false);",
+              "    pm.expect(body.blocked_reason).to.eql(null);",
+              "});"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get blacklist entry without token",
+      "description": "Valida que la API rechace consultas al recurso blacklist cuando no se envia autenticacion.",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "description": "Escenario negativo de autenticacion para consultas. Debe devolver 401 Unauthorized.",
+        "url": {
+          "raw": "{{baseUrl}}/blacklists/{{testEmail}}",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "blacklists",
+            "{{testEmail}}"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('status is 401', function () {",
+              "    pm.response.to.have.status(401);",
+              "});"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

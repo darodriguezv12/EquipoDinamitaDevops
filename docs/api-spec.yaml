@@ -1,0 +1,188 @@
+openapi: 3.0.3
+info:
+  title: Blacklist API
+  version: 1.0.0
+  description: >
+    API REST para consultar y registrar correos en una lista negra.
+    La autenticacion se realiza mediante un token Bearer enviado en el header Authorization.
+servers:
+  - url: http://localhost:5000
+    description: Ambiente local
+  - url: http://blacklist-env.eba-nj7vs2t2.us-east-1.elasticbeanstalk.com
+    description: Ambiente desplegado en AWS Elastic Beanstalk
+tags:
+  - name: Health
+    description: Verificaciones basicas de disponibilidad del servicio
+  - name: Blacklist
+    description: Operaciones de consulta y creacion de entradas en la lista negra
+paths:
+  /ping:
+    get:
+      tags: [Health]
+      summary: Verificar disponibilidad del servicio
+      description: Responde con un mensaje simple para confirmar que la API esta activa.
+      responses:
+        '200':
+          description: Servicio disponible
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: pong
+  /blacklists:
+    post:
+      tags: [Blacklist]
+      summary: Crear entrada en blacklist
+      description: Registra un correo en la lista negra del sistema.
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateBlacklistRequest'
+            examples:
+              ejemplo:
+                value:
+                  email: persona@example.com
+                  app_uuid: 123e4567-e89b-12d3-a456-426614174000
+                  blocked_reason: fraude
+      responses:
+        '201':
+          description: Correo agregado correctamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              examples:
+                creado:
+                  value:
+                    message: Email added to blacklist successfully
+        '400':
+          description: Datos invalidos o cuerpo faltante
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              examples:
+                body_faltante:
+                  value:
+                    message: Request body is required
+                uuid_invalido:
+                  value:
+                    message: app_uuid must be a valid UUID
+        '401':
+          description: Token ausente o invalido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                message: Unauthorized
+        '409':
+          description: El correo ya existe en blacklist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                message: Email is already in blacklist
+        '503':
+          description: Base de datos no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                message: Database is not available right now
+  /blacklists/{email}:
+    get:
+      tags: [Blacklist]
+      summary: Consultar estado de un correo
+      description: Consulta si un correo se encuentra registrado en blacklist.
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: email
+          in: path
+          required: true
+          description: Correo electronico a consultar
+          schema:
+            type: string
+            format: email
+            example: persona@example.com
+      responses:
+        '200':
+          description: Resultado de la consulta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BlacklistStatusResponse'
+              examples:
+                registrado:
+                  value:
+                    is_blacklisted: true
+                    blocked_reason: fraude
+                no_registrado:
+                  value:
+                    is_blacklisted: false
+                    blocked_reason: null
+        '401':
+          description: Token ausente o invalido
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                message: Unauthorized
+        '503':
+          description: Base de datos no disponible
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+              example:
+                message: Database is not available right now
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API token
+  schemas:
+    CreateBlacklistRequest:
+      type: object
+      required:
+        - email
+        - app_uuid
+      properties:
+        email:
+          type: string
+          format: email
+          description: Correo que se desea bloquear
+        app_uuid:
+          type: string
+          format: uuid
+          description: Identificador de la aplicacion cliente
+        blocked_reason:
+          type: string
+          maxLength: 255
+          nullable: true
+          description: Motivo del bloqueo
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    BlacklistStatusResponse:
+      type: object
+      properties:
+        is_blacklisted:
+          type: boolean
+        blocked_reason:
+          type: string
+          nullable: true

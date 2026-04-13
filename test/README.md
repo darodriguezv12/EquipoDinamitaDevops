@@ -40,5 +40,5 @@ La coleccion ya incluye pruebas para validar que:
 - Environment AWS: `test\blacklist-aws.postman_environment.json`
 - Especificacion OpenAPI: `docs\api-spec.yaml`
 - Guia para publicacion en Postman: `docs\postman-deliverable.md`
-
+- Guia de pruebas unitarias para CI: `docs\ci-testing.md`
 

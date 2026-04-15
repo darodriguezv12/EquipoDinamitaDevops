@@ -85,27 +85,9 @@ La aplicacion se encuentra desplegada en AWS Elastic Beanstalk y accesible desde
 
 ## Entregables de la Entrega 2
 
-Para cerrar la entrega, el equipo debe evidenciar:
-
-- Aplicacion ejecutandose en AWS Elastic Beanstalk y accesible por Postman.
-- Repositorio en GitHub con el codigo fuente, pruebas y `buildspec.yml`.
-- Pipeline de CI en AWS disparado por commit a `master` o la rama configurada.
-- Un build exitoso documentado con capturas.
-- Un build fallido documentado con capturas.
-- Documento PDF `Proyecto 1 entrega 2 – Documento.pdf`.
-- Video de sustentacion de maximo 10 minutos.
-
-## Evidencias recomendadas
-
-Capturas utiles para el documento y el video:
-
-- Endpoints funcionando en Postman contra la URL de Beanstalk.
-- Suite de pruebas en el repositorio.
-- Ejecucion exitosa de CodeBuild.
-- Ejecucion fallida de CodeBuild.
-- Imagen publicada en ECR.
-- Configuracion del pipeline en CodePipeline.
-- Aplicacion/version activa en Elastic Beanstalk.
+- [Documento de pruebas unitarias](./docs/ci-testing.md)
+- [Video](https://drive.google.com/file/d/1IByl3_jYrMDbYMCuHIsQZNOfqGymp8qP/view?usp=sharing)
+- [Coleccion de Postman](https://www.postman.com/alejandro-4321861/workspace/devops-proyecto)
 
 ## Entregables de la Entrega 1
 

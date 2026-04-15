@@ -1,6 +1,6 @@
 # Buildspec para CodeBuild
 
-El archivo `buildspec.yml` queda orientado a la Entrega 2, enfocada en integracion continua con `CodeBuild + ECR`.
+El archivo `buildspec.yml` queda preparado para integracion continua con `CodeBuild + ECR`, siguiendo el enfoque del tutorial.
 
 ## Flujo configurado
 
@@ -8,7 +8,7 @@ El archivo `buildspec.yml` queda orientado a la Entrega 2, enfocada en integraci
 2. Ejecuta las pruebas unitarias con `pytest`.
 3. Construye la imagen Docker de la API.
 4. Publica la imagen en Amazon ECR.
-5. Genera un archivo de metadatos del artefacto para dejar evidencia del resultado del build.
+5. Expone como artefacto el contenido del repositorio para reutilizarlo en etapas posteriores del pipeline.
 
 ## Variables configuradas
 
@@ -21,10 +21,4 @@ Con esto el build usa directamente el repositorio ECR del proyecto y solo calcul
 
 El artefacto principal del proceso es la imagen Docker publicada en Amazon ECR.
 
-Adicionalmente, CodeBuild expone como output un archivo `image-detail.env` con:
-
-- `IMAGE_REPO_URI`
-- `IMAGE_TAG`
-- `IMAGE_URI`
-
-Esto deja trazabilidad del artefacto construido sin implementar despliegue automatizado.
+El bloque `artifacts` usa `**/*`, por lo que el pipeline conserva el contenido del repositorio junto con ese archivo de trazabilidad, igual que en el tutorial.

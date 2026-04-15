@@ -35,11 +35,9 @@ phases:
       - echo "Pushing Docker image to ECR"
       - docker push "${IMAGE_REPO_URI}:${IMAGE_TAG}"
       - docker push "${IMAGE_REPO_URI}:latest"
-      - mkdir -p artifact
-      - printf 'IMAGE_REPO_URI=%s\nIMAGE_TAG=%s\nIMAGE_URI=%s:%s\n' "$IMAGE_REPO_URI" "$IMAGE_TAG" "$IMAGE_REPO_URI" "$IMAGE_TAG" > artifact/image-detail.env
+      - printf 'IMAGE_REPO_URI=%s\nIMAGE_TAG=%s\nIMAGE_URI=%s:%s\n' "$IMAGE_REPO_URI" "$IMAGE_TAG" "$IMAGE_REPO_URI" "$IMAGE_TAG" > image-detail.env
       - echo "Container image published to ECR"
 
 artifacts:
-  base-directory: artifact
   files:
-    - image-detail.env
+    - '**/*'

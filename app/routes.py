@@ -17,7 +17,7 @@ def validate_token():
 
 @bp.route("/ping", methods=["GET"])
 def ping():
-    return jsonify({"message": "a"}), 200
+    return jsonify({"message": "pong"}), 200
 
 
 @bp.route("/blacklists", methods=["POST"])

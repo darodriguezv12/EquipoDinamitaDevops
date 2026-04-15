@@ -1,6 +1,6 @@
 # Buildspec para CodeBuild
 
-El archivo `buildspec.yml` ahora queda orientado al flujo del tutorial con `CodeBuild + ECR + CodePipeline + Elastic Beanstalk`.
+El archivo `buildspec.yml` queda orientado a la Entrega 2, enfocada en integracion continua con `CodeBuild + ECR`.
 
 ## Flujo configurado
 
@@ -8,7 +8,7 @@ El archivo `buildspec.yml` ahora queda orientado al flujo del tutorial con `Code
 2. Ejecuta las pruebas unitarias con `pytest`.
 3. Construye la imagen Docker de la API.
 4. Publica la imagen en Amazon ECR.
-5. Genera el bundle de despliegue que Elastic Beanstalk espera recibir desde CodePipeline.
+5. Genera un archivo de metadatos del artefacto para dejar evidencia del resultado del build.
 
 ## Variables configuradas
 
@@ -19,23 +19,12 @@ Con esto el build usa directamente el repositorio ECR del proyecto y solo calcul
 
 ## Artefacto generado
 
-El output del build ya no es un `zip` anidado como `beanstalk.zip`.
+El artefacto principal del proceso es la imagen Docker publicada en Amazon ECR.
 
-CodeBuild deja en su artefacto final estos archivos:
+Adicionalmente, CodeBuild expone como output un archivo `image-detail.env` con:
 
-- `docker-compose.yml`
-- `Dockerrun.aws.json`
-- `nginx/default.conf`
-- `image-detail.env`
+- `IMAGE_REPO_URI`
+- `IMAGE_TAG`
+- `IMAGE_URI`
 
-Ese artefacto es el que CodePipeline puede entregar directamente a Elastic Beanstalk.
-
-## Archivos relacionados
-
-- `docker-compose.local.yaml`: desarrollo local con PostgreSQL.
-- `docker-compose.yml`: stack local con Nginx.
-- `docker-compose.eb.yml`: plantilla para generar el `docker-compose.yml` de Elastic Beanstalk usando la imagen publicada en ECR.
-
-## Nota importante
-
-Para que Elastic Beanstalk pueda descargar la imagen privada desde ECR, el perfil de instancia del entorno debe tener permisos de lectura, por ejemplo la politica administrada `AmazonEC2ContainerRegistryReadOnly`.
+Esto deja trazabilidad del artefacto construido sin implementar despliegue automatizado.

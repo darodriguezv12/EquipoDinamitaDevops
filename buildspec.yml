@@ -19,31 +19,27 @@ phases:
     commands:
       - echo "Running unit tests"
       - python -m pytest tests -q
-      - echo "Preparing ECR variables"
-      - IMAGE_TAG="$(echo "${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest}" | cut -c 1-7)"
-      - ECR_REGISTRY="$(echo "$IMAGE_REPO_URI" | cut -d/ -f1)"
       - echo "Logging in to Amazon ECR"
+      - ECR_REGISTRY="$(echo "$IMAGE_REPO_URI" | cut -d/ -f1)"
       - aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
   build:
     commands:
+      - IMAGE_TAG="$(echo "${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest}" | cut -c 1-7)"
       - echo "Building Docker image ${IMAGE_REPO_URI}:${IMAGE_TAG}"
-      - docker build -t "${IMAGE_REPO_URI}:${IMAGE_TAG}" .
-      - echo "Preparing Elastic Beanstalk bundle"
-      - mkdir -p deployment/nginx
-      - cp docker-compose.eb.yml deployment/docker-compose.yml
-      - cp nginx/default.conf deployment/nginx/default.conf
-      - printf '{\n  "AWSEBDockerrunVersion": 3\n}\n' > deployment/Dockerrun.aws.json
-      - sed -i "s|__WEB_IMAGE__|${IMAGE_REPO_URI}:${IMAGE_TAG}|g" deployment/docker-compose.yml
+      - docker build -t "${IMAGE_REPO_URI}:${IMAGE_TAG}" -t "${IMAGE_REPO_URI}:latest" .
 
   post_build:
     commands:
+      - IMAGE_TAG="$(echo "${CODEBUILD_RESOLVED_SOURCE_VERSION:-latest}" | cut -c 1-7)"
       - echo "Pushing Docker image to ECR"
       - docker push "${IMAGE_REPO_URI}:${IMAGE_TAG}"
-      - printf 'IMAGE_REPO_URI=%s\nIMAGE_TAG=%s\nIMAGE_URI=%s:%s\n' "$IMAGE_REPO_URI" "$IMAGE_TAG" "$IMAGE_REPO_URI" "$IMAGE_TAG" > deployment/image-detail.env
-      - echo "Deployment bundle ready for CodePipeline -> Elastic Beanstalk"
+      - docker push "${IMAGE_REPO_URI}:latest"
+      - mkdir -p artifact
+      - printf 'IMAGE_REPO_URI=%s\nIMAGE_TAG=%s\nIMAGE_URI=%s:%s\n' "$IMAGE_REPO_URI" "$IMAGE_TAG" "$IMAGE_REPO_URI" "$IMAGE_TAG" > artifact/image-detail.env
+      - echo "Container image published to ECR"
 
 artifacts:
-  base-directory: deployment
+  base-directory: artifact
   files:
-    - '**/*'
+    - image-detail.env

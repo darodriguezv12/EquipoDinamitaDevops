@@ -7,7 +7,7 @@ bp = Blueprint("blacklists", __name__)
 
 def validate_token():
     auth_header = request.headers.get("Authorization")
-
+    print("terst")
     if not auth_header or not auth_header.startswith("Bearer "):
         return False
 

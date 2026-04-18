@@ -4,7 +4,7 @@ from app.models import Blacklist
 
 def test_ping_returns_pong(client):
     response = client.get("/ping")
-    print("test")
+    print("test2")
     assert response.status_code == 200
     assert response.get_json() == {"message": "pong"}
 

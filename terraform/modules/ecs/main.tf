@@ -116,6 +116,7 @@ resource "aws_ecs_service" "app" {
     ignore_changes = [
       desired_count,
       task_definition,
+      load_balancer,
     ]
   }
 }

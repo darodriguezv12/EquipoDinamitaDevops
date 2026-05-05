@@ -23,9 +23,19 @@ output "blue_target_group_arn" {
   value       = module.alb.blue_target_group_arn
 }
 
+output "blue_target_group_name" {
+  description = "Initial production target group name."
+  value       = module.alb.blue_target_group_name
+}
+
 output "green_target_group_arn" {
   description = "Secondary target group ARN reserved for future CodeDeploy Blue/Green deployments."
   value       = module.alb.green_target_group_arn
+}
+
+output "green_target_group_name" {
+  description = "Secondary target group name reserved for future CodeDeploy Blue/Green deployments."
+  value       = module.alb.green_target_group_name
 }
 
 output "ecs_cluster_name" {
@@ -43,7 +53,27 @@ output "rds_endpoint" {
   value       = module.rds.db_endpoint
 }
 
+output "codepipeline_name" {
+  description = "CI/CD pipeline name."
+  value       = module.cicd.pipeline_name
+}
+
+output "codebuild_project_name" {
+  description = "CodeBuild project name."
+  value       = module.cicd.codebuild_project_name
+}
+
+output "codedeploy_app_name" {
+  description = "CodeDeploy ECS application name."
+  value       = module.cicd.codedeploy_app_name
+}
+
+output "codedeploy_deployment_group_name" {
+  description = "CodeDeploy ECS deployment group name."
+  value       = module.cicd.codedeploy_deployment_group_name
+}
+
 output "codedeploy_service_role_arn" {
-  description = "IAM role ARN reserved for future AWS CodeDeploy ECS Blue/Green setup."
-  value       = module.ecs.codedeploy_service_role_arn
+  description = "CodeDeploy ECS service role ARN."
+  value       = module.cicd.codedeploy_service_role_arn
 }

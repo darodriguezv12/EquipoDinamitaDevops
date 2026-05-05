@@ -176,8 +176,26 @@ variable "db_init_delay" {
   default     = 2
 }
 
-variable "codedeploy_service_role_name" {
-  description = "IAM role name reserved for future ECS Blue/Green deployments with CodeDeploy."
+variable "github_connection_arn" {
+  description = "CodeConnections ARN used by CodePipeline to read the GitHub repository."
   type        = string
-  default     = "blacklist-api-dev-codedeploy-ecs"
+  default     = "arn:aws:codeconnections:us-east-1:383962123552:connection/187c43c1-6f7f-435a-ab83-795d6044a3b6"
+}
+
+variable "github_full_repository_id" {
+  description = "GitHub repository in owner/name format."
+  type        = string
+  default     = "darodriguezv12/EquipoDinamitaDevops"
+}
+
+variable "github_branch_name" {
+  description = "GitHub branch that triggers the pipeline."
+  type        = string
+  default     = "main"
+}
+
+variable "pipeline_artifact_retention_days" {
+  description = "Days to retain CodePipeline artifacts in S3."
+  type        = number
+  default     = 7
 }

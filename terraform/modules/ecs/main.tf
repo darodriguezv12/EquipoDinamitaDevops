@@ -38,27 +38,6 @@ resource "aws_iam_role" "task" {
   assume_role_policy = data.aws_iam_policy_document.ecs_tasks_assume_role.json
 }
 
-data "aws_iam_policy_document" "codedeploy_assume_role" {
-  statement {
-    actions = ["sts:AssumeRole"]
-
-    principals {
-      type        = "Service"
-      identifiers = ["codedeploy.amazonaws.com"]
-    }
-  }
-}
-
-resource "aws_iam_role" "codedeploy" {
-  name               = var.codedeploy_service_role_name
-  assume_role_policy = data.aws_iam_policy_document.codedeploy_assume_role.json
-}
-
-resource "aws_iam_role_policy_attachment" "codedeploy_ecs" {
-  role       = aws_iam_role.codedeploy.name
-  policy_arn = "arn:aws:iam::aws:policy/AWSCodeDeployRoleForECS"
-}
-
 resource "aws_ecs_task_definition" "app" {
   family                   = "${var.name_prefix}-task"
   requires_compatibilities = ["FARGATE"]
@@ -135,8 +114,8 @@ resource "aws_ecs_service" "app" {
 
   lifecycle {
     ignore_changes = [
+      desired_count,
       task_definition,
-      load_balancer,
     ]
   }
 }

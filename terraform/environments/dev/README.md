@@ -10,13 +10,13 @@ Terraform crea una infraestructura dedicada para el proyecto, sin reutilizar rec
 - Dos subredes públicas en `us-east-1a` y `us-east-1b`.
 - Un Internet Gateway y una tabla de rutas pública con salida a `0.0.0.0/0`.
 - Un Application Load Balancer público escuchando por HTTP en el puerto `80`.
-- Dos target groups HTTP, `blue` y `green`, preparados para despliegues Blue/Green con CodeDeploy.
+- Dos target groups HTTP, `blue` y `green`, usados por CodeDeploy para despliegues Blue/Green.
 - Un clúster ECS con una tarea Fargate que ejecuta el contenedor de la API.
 - Un repositorio ECR llamado `proyecto-1-blacklist-api-dev` para publicar la imagen Docker.
 - Una base de datos PostgreSQL en RDS para persistencia de datos.
 - Security groups separados para ALB, ECS y RDS.
 - Logs de la aplicación en CloudWatch.
-- Roles IAM mínimos para ejecución de tareas ECS y un rol reservado para CodeDeploy.
+- Roles IAM mínimos para ejecución de tareas ECS, CodeBuild, CodePipeline y CodeDeploy.
 
 El flujo de tráfico esperado es:
 
@@ -51,7 +51,7 @@ El ALB se crea como balanceador público y expone la API por HTTP. El listener d
 Se crean dos target groups:
 
 - `blue`: target group activo usado por el servicio ECS inicial.
-- `green`: target group secundario reservado para una futura integración con CodeDeploy Blue/Green.
+- `green`: target group secundario usado por CodeDeploy durante los despliegues Blue/Green.
 
 Ambos target groups usan health checks HTTP contra `/ping`, esperando respuesta `200`.
 
@@ -142,8 +142,9 @@ Después del `apply`, usa los outputs principales:
 - `ecs_cluster_name`: nombre del clúster ECS.
 - `ecs_service_name`: nombre del servicio ECS.
 - `rds_endpoint`: endpoint privado de PostgreSQL.
-- `blue_target_group_arn` y `green_target_group_arn`: target groups para despliegues Blue/Green.
-- `codedeploy_service_role_arn`: rol reservado para configurar CodeDeploy.
+- `blue_target_group_arn` y `green_target_group_arn`: target groups del balanceador.
+- `codepipeline_name`: nombre del pipeline Source-Build-Deploy.
+- `codebuild_project_name`: nombre del proyecto CodeBuild.
 
 ## Costos y limpieza
 

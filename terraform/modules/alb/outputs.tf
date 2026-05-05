@@ -8,9 +8,19 @@ output "listener_arn" {
   value       = aws_lb_listener.http.arn
 }
 
+output "blue_target_group_name" {
+  description = "Blue target group name."
+  value       = aws_lb_target_group.blue.name
+}
+
 output "blue_target_group_arn" {
   description = "Blue target group ARN."
   value       = aws_lb_target_group.blue.arn
+}
+
+output "green_target_group_name" {
+  description = "Green target group name."
+  value       = aws_lb_target_group.green.name
 }
 
 output "green_target_group_arn" {

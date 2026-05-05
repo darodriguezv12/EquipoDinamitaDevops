@@ -14,7 +14,6 @@ type config struct {
 	region       string
 	cluster      string
 	service      string
-	dbIdentifier string
 	desiredCount int
 }
 
@@ -31,7 +30,6 @@ func main() {
 	flag.StringVar(&cfg.region, "region", envOrDefault("REGION", "us-east-1"), "AWS region")
 	flag.StringVar(&cfg.cluster, "cluster", envOrDefault("CLUSTER_NAME", "blacklist-api-dev-cluster"), "ECS cluster name")
 	flag.StringVar(&cfg.service, "service", envOrDefault("SERVICE_NAME", "blacklist-api-dev-service"), "ECS service name")
-	flag.StringVar(&cfg.dbIdentifier, "db", envOrDefault("DB_INSTANCE_IDENTIFIER", "blacklist-api-dev-postgres"), "RDS DB instance identifier")
 	flag.IntVar(&cfg.desiredCount, "desired-count", envIntOrDefault("DESIRED_COUNT", 1), "ECS desired count when starting")
 	flag.Usage = usage
 	flag.Parse()
@@ -79,61 +77,14 @@ func stop(cfg config) error {
 		return err
 	}
 
-	status, err := dbStatus(cfg)
-	if err != nil {
-		return err
-	}
-
-	step(fmt.Sprintf("RDS status is %q", status))
-	switch status {
-	case "available":
-		step(fmt.Sprintf("Stopping RDS instance %q", cfg.dbIdentifier))
-		if err := runQuiet("aws", "rds", "stop-db-instance",
-			"--db-instance-identifier", cfg.dbIdentifier,
-			"--region", cfg.region,
-			"--no-cli-pager"); err != nil {
-			return err
-		}
-	case "stopped", "stopping":
-		step("RDS instance is already stopped or stopping")
-	default:
-		step("RDS instance is not in a stoppable state; skipping stop")
-	}
-
 	fmt.Println()
-	fmt.Println("Academic infra paused as much as AWS allows without destroying it.")
-	fmt.Println("Note: the Application Load Balancer still exists and may continue generating cost.")
+	fmt.Println("Academic infra paused by stopping Fargate tasks.")
+	fmt.Println("Note: RDS and the Application Load Balancer still exist and may continue generating cost.")
 	fmt.Println(`For the lowest cost, run: terraform -chdir="terraform/environments/dev" destroy`)
 	return nil
 }
 
 func start(cfg config) error {
-	status, err := dbStatus(cfg)
-	if err != nil {
-		return err
-	}
-
-	step(fmt.Sprintf("RDS status is %q", status))
-	switch status {
-	case "stopped":
-		step(fmt.Sprintf("Starting RDS instance %q", cfg.dbIdentifier))
-		if err := runQuiet("aws", "rds", "start-db-instance",
-			"--db-instance-identifier", cfg.dbIdentifier,
-			"--region", cfg.region,
-			"--no-cli-pager"); err != nil {
-			return err
-		}
-		if err := waitForRDS(cfg); err != nil {
-			return err
-		}
-	case "available":
-		step("RDS instance is already available")
-	default:
-		if err := waitForRDS(cfg); err != nil {
-			return err
-		}
-	}
-
 	step(fmt.Sprintf("Setting ECS service desired count to %d", cfg.desiredCount))
 	if err := runQuiet("aws", "ecs", "update-service",
 		"--cluster", cfg.cluster,
@@ -152,13 +103,6 @@ func start(cfg config) error {
 	fmt.Println()
 	fmt.Println("Academic infra resumed. Use the Terraform output alb_dns_name to test the API.")
 	return nil
-}
-
-func waitForRDS(cfg config) error {
-	step("Waiting for RDS instance to become available")
-	return run("aws", "rds", "wait", "db-instance-available",
-		"--db-instance-identifier", cfg.dbIdentifier,
-		"--region", cfg.region)
 }
 
 func waitForECSCounts(cfg config, desired int) error {
@@ -228,27 +172,8 @@ func ecsCounts(cfg config) (ecsServiceCounts, error) {
 	}, nil
 }
 
-func dbStatus(cfg config) (string, error) {
-	out, err := output("aws", "rds", "describe-db-instances",
-		"--db-instance-identifier", cfg.dbIdentifier,
-		"--region", cfg.region,
-		"--query", "DBInstances[0].DBInstanceStatus",
-		"--output", "text")
-	if err != nil {
-		return "", err
-	}
-	return strings.TrimSpace(out), nil
-}
-
 func step(message string) {
 	fmt.Printf("==> %s\n", message)
-}
-
-func run(name string, args ...string) error {
-	cmd := exec.Command(name, args...)
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	return cmd.Run()
 }
 
 func runQuiet(name string, args ...string) error {

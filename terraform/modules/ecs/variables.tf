@@ -74,8 +74,3 @@ variable "db_init_delay" {
   description = "DB initialization retry delay."
   type        = number
 }
-
-variable "codedeploy_service_role_name" {
-  description = "IAM role name reserved for future CodeDeploy ECS deployments."
-  type        = string
-}

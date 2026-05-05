@@ -62,3 +62,15 @@ node_modules/
 *.swp
 *.swo
 *.zip
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.*
+*.tfplan
+crash.log
+crash.*.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json

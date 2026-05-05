@@ -4,7 +4,7 @@ env:
   shell: bash
   variables:
     AWS_DEFAULT_REGION: us-east-1
-    IMAGE_REPO_URI: 383962123552.dkr.ecr.us-east-1.amazonaws.com/proyecto
+    IMAGE_REPO_URI: 383962123552.dkr.ecr.us-east-1.amazonaws.com/proyecto-1-blacklist-api-dev
 
 phases:
   install:

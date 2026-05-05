@@ -13,7 +13,7 @@ El archivo `buildspec.yml` implementa el proceso de integracion continua de la E
 ## Variables configuradas
 
 - `AWS_DEFAULT_REGION=us-east-1`
-- `IMAGE_REPO_URI=383962123552.dkr.ecr.us-east-1.amazonaws.com/proyecto`
+- `IMAGE_REPO_URI=383962123552.dkr.ecr.us-east-1.amazonaws.com/proyecto-1-blacklist-api-dev`
 
 Con esto el build usa directamente el repositorio ECR del proyecto y calcula el tag desde el commit actual.
 

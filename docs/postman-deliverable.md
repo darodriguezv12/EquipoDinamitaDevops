@@ -44,6 +44,18 @@ Este repositorio ya incluye los insumos minimos para la entrega de documentacion
 4. Ajustar las variables `baseUrl`, `apiToken`, `testEmail`, `appUuid` y `blockedReason`.
 5. Ejecutar manualmente la coleccion o usar el Collection Runner.
 
+Para la Entrega 3, el environment de AWS apunta al Application Load Balancer del servicio ECS/Fargate:
+
+```text
+http://blacklist-api-dev-alb-1334000577.us-east-1.elb.amazonaws.com
+```
+
+La misma coleccion puede ejecutarse con Newman:
+
+```powershell
+npx newman run test\blacklist.postman_collection.json -e test\blacklist-aws.postman_environment.json
+```
+
 ## Como publicar la documentacion
 
 1. Abrir la coleccion en Postman.

@@ -8,8 +8,8 @@ info:
 servers:
   - url: http://localhost:5000
     description: Ambiente local
-  - url: http://blacklist-env.eba-nj7vs2t2.us-east-1.elasticbeanstalk.com
-    description: Ambiente desplegado en AWS Elastic Beanstalk
+  - url: http://blacklist-api-dev-alb-1334000577.us-east-1.elb.amazonaws.com
+    description: Ambiente desplegado en AWS ECS/Fargate
 tags:
   - name: Health
     description: Verificaciones basicas de disponibilidad del servicio

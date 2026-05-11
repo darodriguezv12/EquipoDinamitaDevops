@@ -27,6 +27,12 @@ npx newman run test\blacklist.postman_collection.json -e test\blacklist-aws.post
 
 Antes de correrlo, cambiar `baseUrl` y `apiToken` en ese archivo.
 
+El environment AWS actual apunta al ALB del servicio ECS/Fargate:
+
+```text
+http://blacklist-api-dev-alb-1334000577.us-east-1.elb.amazonaws.com
+```
+
 La coleccion ya incluye pruebas para validar que:
 
 - el `POST /blacklists` acepte `blocked_reason` en el cuerpo,
@@ -41,4 +47,3 @@ La coleccion ya incluye pruebas para validar que:
 - Especificacion OpenAPI: `docs\api-spec.yaml`
 - Guia para publicacion en Postman: `docs\postman-deliverable.md`
 - Guia de pruebas unitarias para CI: `docs\ci-testing.md`
-

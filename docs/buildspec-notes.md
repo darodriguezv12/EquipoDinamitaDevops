@@ -32,3 +32,13 @@ El bloque `artifacts` exporta solamente los archivos que necesita el despliegue 
 ## Nota operativa
 
 El `Dockerfile` usa como imagen base `public.ecr.aws/docker/library/python:3.11-slim` para evitar el limite de descargas anonimas de Docker Hub dentro de CodeBuild.
+
+## Escenarios de validacion
+
+Durante la Entrega 3 se usaron cambios controlados para documentar tres comportamientos del pipeline:
+
+- CI fallido: una prueba unitaria esperaba un codigo HTTP incorrecto y CodeBuild fallo en `PRE_BUILD`.
+- CI/CD exitoso: las pruebas pasaron, la imagen fue publicada en ECR y CodeDeploy actualizo ECS/Fargate.
+- CI exitoso/CD fallido: CodeBuild fue exitoso, pero CodeDeploy fallo al recibir una configuracion de puerto invalida en el artefacto de despliegue.
+
+El estado normal del archivo debe conservar `ContainerPort = 5000`, que corresponde al puerto expuesto por la aplicacion Flask.

@@ -11,7 +11,7 @@ Validar rapidamente que los endpoints principales de la API REST sigan funcionan
 Las pruebas se ejecutan con `pytest` sobre una aplicacion Flask creada en modo de prueba. Para aislar cada caso de prueba se usa una base de datos SQLite en memoria:
 
 - no requiere levantar PostgreSQL,
-- no depende de Docker ni de Elastic Beanstalk,
+- no depende de Docker ni de servicios desplegados en AWS,
 - se crea desde cero en cada prueba,
 - se limpia automaticamente al finalizar cada caso.
 
@@ -48,3 +48,9 @@ Ejecutar la suite:
 ```powershell
 python -m pytest tests -q
 ```
+
+## Uso dentro del pipeline
+
+En la Entrega 3, esta suite se ejecuta durante la fase `pre_build` de AWS CodeBuild. Si alguna prueba falla, CodeBuild termina con error y CodePipeline no continua hacia la etapa de despliegue.
+
+Esto se uso para documentar el escenario de CI fallido: una prueba del endpoint `/ping` fue modificada temporalmente para esperar un codigo `500`, aunque la API respondia `200 OK`. El pipeline fallo en CodeBuild con `assert 200 == 500`, demostrando que la etapa de integracion continua detiene cambios defectuosos antes del despliegue.

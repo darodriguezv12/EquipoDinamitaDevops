@@ -53,7 +53,7 @@ phases:
                   "TaskDefinition": "<TASK_DEFINITION>",
                   "LoadBalancerInfo": {
                     "ContainerName": "${CONTAINER_NAME}",
-                  "ContainerPort": 9999
+                  "ContainerPort": 5000
                   }
                 }
               }
